@@ -1,0 +1,28 @@
+.fileInput {
+    display: none;
+}
+
+.fileInputContainer{
+    color: rgb(70, 70, 70);
+}
+
+.fileInputContainer label {
+    cursor: pointer;
+    padding: 10px;
+    background-color: rgb(76, 135, 255);
+    border-radius: 5px;
+    color: white;
+}
+
+.fileInputContainer label:hover {
+    background-color: rgb(21, 99, 255);
+}
+
+.fileInputContainer .fileName {
+    margin-left: 10px;
+}
+
+
+.invalid {
+    color: red;
+}

@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter&family=Noto+Sans:wght@300;400;500&display=swap');
+
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 25px;
+
+}
+
+
+.container img {
+    max-width: 60px
+}

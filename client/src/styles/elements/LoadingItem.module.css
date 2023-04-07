@@ -1,0 +1,32 @@
+.container {
+    padding: 0px;
+}
+
+.loading {
+    padding: 0px !important;
+    height: 3px !important;
+  }
+
+.loadingShow {
+    background-color: grey;
+    animation: line 1s infinite !important;
+    animation-timing-function: linear !important;
+}
+
+  @keyframes line {
+    0%   {
+      margin-left: 0%;
+      margin-right: 100%;
+      }
+    50%  {
+      margin-left: 25%;
+      margin-right: 25%;
+     }
+    100%  {
+      margin-left: 100%;
+      margin-right: 0%;
+      }
+  }
+  
+
+

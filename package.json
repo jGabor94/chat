@@ -1,0 +1,27 @@
+{
+  "name": "chatapp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js",
+    "webpack": "cd client && npm start && cd .. ",
+    "build": "cd client && npm run build && cd ..",
+    "install-all": "npm install && cd client && npm install && npm run build && cd .."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-validator": "^6.15.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.2",
+    "nodemailer": "^6.9.1",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "uuid": "^9.0.0"
+  }
+}

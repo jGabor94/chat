@@ -1,0 +1,21 @@
+.submit {
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+    background-color: rgb(48, 48, 48);
+}
+
+.submit:disabled {
+    cursor:auto;
+    opacity: 0.7;
+}
+
+.submit:disabled:hover {
+    background-color: rgb(48, 48, 48);
+}
+
+.submit:hover {
+    background-color: rgb(35, 35, 35);
+}

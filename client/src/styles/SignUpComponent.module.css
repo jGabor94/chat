@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter&family=Noto+Sans:wght@300;400;500&display=swap');
+
+
+.signUpContainer {
+    font-family: 'Noto Sans', sans-serif;
+    margin: auto auto;
+    max-width: 500px;
+    padding: 20px 0;
+    border: 1px solid rgb(174, 174, 174);
+}
+
+.title{
+    font-weight: 900;
+    display: block;
+    font-size: 30px;
+    border-bottom: 2px solid rgb(40, 40, 40);
+    color: rgb(40, 40, 40);
+    margin-bottom: 20px;
+}
+
+.form {
+    margin: auto auto;
+    width: 80%;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (max-width: 500px) {
+    .form {
+        width: 90%;
+   }
+}
+
+.signUpContainer .checkBoxContainer {
+    display: grid;
+    column-gap: 10px;
+    grid-template-columns: auto auto;
+}
+
+

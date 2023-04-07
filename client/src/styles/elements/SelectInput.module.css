@@ -1,0 +1,35 @@
+
+.container {
+    position: relative;
+}
+
+.label {
+    position: absolute;
+    font-weight: 500;
+    float: left;
+    display: block;
+    color: rgb(127, 127, 127);
+    background-color: white;
+    left: 20px;
+    top: 8px;
+    pointer-events: none;
+    transition: 0.2s;
+}
+
+.labelFocused {
+    font-size: 12px;
+    color: rgb(56, 56, 56);
+    padding: 0 5px 0 5px;
+    top: -10px;
+}
+
+.select {   
+    width: 100%;
+    outline: 1px solid rgb(79, 79, 79) !important;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 50px;
+    outline: none;
+}

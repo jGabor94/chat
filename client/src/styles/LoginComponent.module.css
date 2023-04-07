@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Inter&family=Noto+Sans:wght@300;400;500&display=swap');
+
+.loginContainer {
+    font-family: 'Noto Sans', sans-serif;
+    margin: auto auto;
+    max-width: 500px;
+    padding: 20px 0;
+    border: 1px solid rgb(174, 174, 174);
+}
+
+.form {
+    margin: auto auto;
+    width: 80%;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (max-width: 500px) {
+    .form {
+        width: 90%;
+   }
+}
+
+.title{
+    font-weight: 900;
+    display: block;
+    font-size: 30px;
+    border-bottom: 2px solid rgb(40, 40, 40);
+    color: rgb(40, 40, 40);
+    margin-bottom: 20px;
+}
+
+.form input[type=button] {
+    background-color: rgb(43, 95, 201);
+}
+
+
+.submit:hover {
+    background-color: rgb(35, 35, 35);
+}
+
+.form input[type=button]:hover {
+    background-color: rgb(40, 82, 188) !important;
+}
+
+
+
+
