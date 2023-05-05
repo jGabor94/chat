@@ -1,46 +1,34 @@
 import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
-import LoadingItem from "./elements/LoadingItem"
-import styles from './styles/verifyEmailPage.module.css';
+import CircularProgress from "@mui/material/CircularProgress";
+import HomeContainer from "./elements/HomeContainer";
 
 const EmailVerifiyPage = () => {
 
     const { token } = useParams()
-    const [success, setSuccess] = useState(false)
-    const [message, setMessage] = useState("")
-    const [isFetchPending, setFetchPending] = useState(true)
+
+    const navigate = useNavigate()
 
 
     useEffect(() => {
+        
         axios.get(`/user//verify/${token}`)
-        .then((res) => {
-            setMessage("Aktiválás sikeres")
-            setFetchPending(false)
-            setSuccess(true)
+        .then(() => {
+            navigate("/", { state: {success: true, msg: "Sikeres ativálás"} })
         })
-        .catch((err) => {
-            setMessage(err.response.data.errorMsg[0])
-            setFetchPending(false)
+        .catch(() => {
+            navigate("/", { state: {success: false, msg: "Sikertelen ativálás"} })
         })
+        
     }, [])
 
 
-    return (<div>{isFetchPending ? (
-        <LoadingItem />
-    ) :(
-        <div className={styles.container}>
-            <div className={styles.message}>{message}</div>
-            {success ? (
-                <img src="/success.png" />
-            ) : (
-                <img src="/icons/failedIcon.png" />
-            )}
-            
-        </div>
-    )}
-   
-    </div>)
+    return (
+        <HomeContainer>
+            <CircularProgress sx={{width: "100px", height: "100px", color: "white"}}/>
+        </HomeContainer>
+   )
 }
 
 export default EmailVerifiyPage

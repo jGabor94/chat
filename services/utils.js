@@ -36,6 +36,14 @@ const utils = {
         errors = errors.filter((v,i,a)=>a.findIndex(v2=>(v2.msg===v.msg))===i)
         if(errors.length > 0) throw new validationErrors(errors)
     },
+    deleteRecipeImage: async (imageid) => {
+        try{
+            return await fs.unlink(`public/images/${imageid}`)
+        }catch(err){
+            return err
+        }
+         
+    },
     sendMailAsync: function (mailOptions) {
         return new Promise((res, rej) => {
             transporter.sendMail({...mailOptions, from: 'barcafanx@gmail.com',}, function(error, info){

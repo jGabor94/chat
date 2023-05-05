@@ -4,72 +4,120 @@ import useFetchAuth from './useFetchAuth';
 import axios from "axios";
 import { io } from "socket.io-client";
 import {sortChat, formatChat, isExistChat, addVisitor, removeVisitor, removeChat, updateLastMessage} from "../helpers";
+import { reduceChat, adMsgToReducedArray, removeFromArray, addArray, updateVisitor } from "../helpers";
+import chatAlert from '../audio/chatAlert.mp3';
+
 
 export const socket = io("", {
     autoConnect: false
   });
 
+
+
 const useChat = () => {
-    const [online, setOnline] = useState(new Set())
-    const [chat, setChat] = useState(false)
-    const [rooms, setRooms] = useState([])
+    const [online, setOnline] = useState([])
+    const [chat, setChat] = useState({})
+    const [rooms, setRooms] = useState(false)
+    const [isFetchPending, setFetchPending] = useState(false)
 
-    const [allUsers, setAllUsers] = useState([])
-    const [allRooms, setAllRooms] = useState([])
-
+    const audio = new Audio(chatAlert)
+    audio.volume = 0.4
+   
+    const [alertMap, setAlertMap] = useState({
+        private: {
+            rooms: [],
+            number: 0
+        },
+        group: {
+            rooms: [],
+            number: 0
+        },
+        all: {
+            rooms: [],
+            number: 0
+        },
+    })
 
     const { loginState } = useLoginServices()
     const fetchAuth = useFetchAuth()
 
     const sendMessage = (message) => {
-        socket.emit("message", message, chat._id )
+        fetchAuth.post("/chat/message", {chatId: chat._id, message: message})
+        const msgObject = {type: 0, message, user: {username: loginState.username}, createdAt: new Date().toISOString()}
         setChat((state) => {
-            state.messages.unshift({type: 0, message, user: {username: loginState.username}})
-            return {...state}
+            return {...state, messages: adMsgToReducedArray(state.messages, msgObject)}
         })
-        setRooms((state) => [...sortChat(updateLastMessage(state, chat))])
+        setRooms((state) => [...sortChat(updateLastMessage(state, chat, msgObject))])
     }
     
 
     const leaveRoom = () => {
-        socket.emit("closeChat", chat._id)
-        setRooms((state) => [...removeChat(state, chat)])
-        setChat("")
+        fetchAuth.put(`/chat/close`, {chatId: chat._id}).then(() => {
+            setRooms((state) => [...removeChat(state, chat)])
+            setChat("")
+        })
     }
 
     const newPrivateChat = (userid, username) => {
-        socket.emit("newPrivateChat", userid, username, chat._id)
+        setFetchPending(true)
+        fetchAuth.post(`/chat/new`, {userid, username}).then(({ data }) => {
+            const chat = formatChat(data.chat, loginState.id)
+            if(data.new){
+                setRooms((state) => {
+                    !isExistChat(state, chat) && state.push(chat)
+                    return [...sortChat(state)]
+                })}else{
+                    setRooms(updateVisitor(rooms, chat, loginState.id))
+                }
+            setChat({...chat, messages: reduceChat(chat.messages)})
+            setFetchPending(false)
+        })
+        .catch((err) => {
+            console.log(err)
+            setFetchPending(false)
+        })
+       
     }
-
-    const newGroupChat = (id) => {
-        if(!chat || (chat._id !== id)) socket.emit("newGroupChat", id, chat._id)
+    
+    const handleRoomChange = (roomId) => {
+        if(!chat || (chat._id !== roomId)){
+            setFetchPending(true)
+            fetchAuth.get(`/chat/${roomId}`).then(({ data }) => {
+                const chat = formatChat(data.chat, loginState.id)
+                if(data.new){
+                    setRooms((state) => {
+                        !isExistChat(state, chat) && state.push(chat)
+                        return [...sortChat(state)]
+                    })
+                }else{
+                    setRooms(updateVisitor(rooms, chat, loginState.id))
+                }
+                setChat({...chat, messages: reduceChat(chat.messages)})
+                setFetchPending(false) 
+            })
+            .catch((err) => {
+                console.log(err)
+                setFetchPending(false)
+            })
+        }  
     }
-
-    
-const handleRoomChange = (roomId) => {
-    if(!chat || (chat._id !== roomId))  socket.emit("joinChat", roomId)  
-}
-
-    
 
     useEffect(() => {
         
         socket.connect()
 
+
+        socket.on("message", (msgObject, chatId) => {
         
-
-        socket.on("getOnlineUsers", (onlineUsers) => setOnline(new Set(onlineUsers)))
-
-
-
-    socket.on("message", (msgObject, chatId) => {
         setChat((currentChat) => {
-            if(chatId === currentChat._id) currentChat.messages.unshift(msgObject)
+            if(chatId === currentChat._id){
+                currentChat.messages = adMsgToReducedArray(currentChat.messages, msgObject)
+            }
 
             setRooms((state) => {
                 state.map((room) => {
                     if(room._id === chatId){
-                        room.lastMessage = new Date().toISOString()      
+                        room.lastMessage = msgObject
                         if(room._id !== currentChat._id){
                             room.visitors = removeVisitor(room, loginState.id)
                         }
@@ -77,32 +125,13 @@ const handleRoomChange = (roomId) => {
                 })
                 return [...sortChat(state)]
             })
+            
             return {...currentChat}
         })
     })
 
-    socket.on("reciveChat", (chat) => {
-        setChat(chat)
-        setRooms((state) => {
-            state.map((room) => {
-                if(chat._id === room._id) {
-                    room.visitors = addVisitor(room, loginState.id)
-                }
-            })
-            return [...state]
-        })  
-    })
 
-    socket.on("joinUser", (participants, chatId) => {
-        setChat((room) => {
-            if(room._id === chatId){
-                room.participants = participants
-            } 
-            return {...room}
-        })
-    })
-
-    socket.on("leaveUser", (participants, chatId) => {
+    socket.on("update participants", (participants, chatId) => {
         setChat((room) => {
             if(room._id === chatId){
                 room.participants = participants
@@ -118,42 +147,56 @@ const handleRoomChange = (roomId) => {
         })
     })
 
-    socket.on("newGroupChat", (chat) => {
-        setRooms((state) => {
-            !isExistChat(state, chat) && state.push(formatChat(chat, loginState.id))
-            return [...sortChat(state)]
-        })
-    })
 
-    socket.on("goOffline", (userid) => {
-        const set = new Set(online)
-        online.delete(userid)
-        setOnline(set)
-    })
+    socket.on("goOffline", (userid) => setOnline(state => removeFromArray([...state], [userid])))
+    socket.on("goOnline", (userid) => setOnline((state) => addArray([...state], userid)))
 
-    socket.on("goOnline", (userid) => {
-        const set = new Set(online)
-        set.add(userid)
-        setOnline(set)
-    })
-
-        fetchAuth.get("/mychats").then(({data}) => {
+        fetchAuth.get("/chat").then(({data}) => {
             data.map((chat) => formatChat(chat, loginState.id))
             setRooms(data)
-            socket.emit("getOnlineUsers")
         })
 
-        fetchAuth.get("/allusers").then(({data}) => setAllUsers(data))
-        axios.get("/allrooms").then(({data}) => setAllRooms(data))
+        fetchAuth.get("/chat/online").then(({data}) => {
+            setOnline(data)
+        })
+
+    
         
-        return () => {socket.disconnect()}
+    return () => {socket.close()}        
 
     }, [])
 
-    useEffect(() => console.log(chat), [chat])
-    useEffect(() => console.log(rooms), [rooms])
+    useEffect(() => {
 
+        if(rooms){
+            setAlertMap(state => {
+                const newState ={
+                    private: rooms.filter(room => room.type === "private" && !room.visitors.includes(loginState.id)), 
+                    group: rooms.filter(room => room.type === "group" && !room.visitors.includes(loginState.id))
+                }
 
+                if((state.private.length < newState.private.length) || (state.group.length < newState.group.length)){
+                    audio.play()
+                }
+                return {
+                    private: {
+                        rooms: newState.private,
+                        number: newState.private.length
+                    },
+                    group: {
+                        rooms: newState.group,
+                        number: newState.group.length
+                    },
+                    all: {
+                        rooms: [...newState.private, ...newState.group],
+                        number: newState.private.length + newState.group.length
+                    }
+                }
+            })
+           
+        }
+        
+    }, [rooms])
 
     return {online, 
         setOnline, 
@@ -161,15 +204,12 @@ const handleRoomChange = (roomId) => {
         setChat, 
         rooms, 
         setRooms, 
-        allUsers, 
-        setAllUsers, 
-        allRooms, 
-        setAllRooms,
         leaveRoom,
         newPrivateChat,
-        newGroupChat,
         handleRoomChange,
-        sendMessage
+        sendMessage,
+        isFetchPending,
+        alertMap
     }
 }
 

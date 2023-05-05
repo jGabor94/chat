@@ -15,17 +15,20 @@ const userSchema = new mongoose.Schema({
     username: String,
     password: String,
     email: String,
+    name: {type: String, default: ""},
+    age: {type: Number, default: null},
+    imageid: {type: String, default: "default"},
     active: {type: Boolean, default: false},
     roles: []
-})
+}, { timestamps: true })
 
 const chatSchema = new mongoose.Schema({
     name: String,
     type: {type: String, enum: ['private', 'group']},
     participants: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
-    lastMessage: {type: Date, default: Date.now},
-    visitors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }]
+    visitors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
+    lastMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' }
 }, { timestamps: true })
 
 
@@ -37,6 +40,15 @@ const messageSchema = new mongoose.Schema({
 
 
 
+
+messageSchema.virtual('userdata', {
+    ref: 'User',
+    localField: 'user',
+    foreignField: '_id',
+    justOne: true
+  });
+  
+
 const roleSchema = new mongoose.Schema({
     name: {type: String},
     crud: {type: {}, default: {
@@ -47,13 +59,35 @@ const roleSchema = new mongoose.Schema({
     }}
 })
 
+/*
+messageSchema.pre('populate', function(next) {
+    this.userRefId = this.user;
+    next();
+  });
+
+
+messageSchema.virtual('originalUserid').get(function(){
+    return this.user
+})
+
+messageSchema.pre('find', function(next) {
+    this.populate('originalUserid');
+    next();
+  });
+*/
+
+
+
+messageSchema.set('toObject', { virtuals: true });
+messageSchema.set('toJSON', { virtuals: true });
+
+
 const verifyTokenSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     token: String,
 })
 
 chatSchema.methods.addVisitor = function({userid}) {
-    console.log(this)
     !this.visitors.includes(userid) && this.visitors.push(userid)
   };
 
@@ -61,6 +95,8 @@ chatSchema.methods.addVisitor = function({userid}) {
 export const User = mongoose.model('User', userSchema)
 export const Chat = mongoose.model('Chat', chatSchema)
 export const Message = mongoose.model('Message', messageSchema)
+
+
 export const Role = mongoose.model('Role', roleSchema)
 export const VerifyToken = mongoose.model('VerifyToken', verifyTokenSchema)
 

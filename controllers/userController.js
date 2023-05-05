@@ -46,19 +46,11 @@ export async function  signupController(req, res){
     }
 }
 
-export async function getFullUserDataController(req, res){
-    try{
-        const userdetails = await userServices.getUserDetails(req.userdata.id, {populated: true})
-        res.send(userdetails)
-    }catch(err){
-        console.log(err)
-        res.sendStatus(500) 
-    }
-}
+
 
 export async function getUserDataController(req, res){
     try{
-        const userdetails = await userServices.getUserDetails(req.userdata.id, {populated: false})
+        const userdetails = await userServices.getUserDetails(req.userdata.id)
         res.send(userdetails)
     }catch(err){
         console.log(err)
@@ -81,4 +73,72 @@ export async function verifyEmailController(req, res){
         }
        
     }
+}
+
+export async function profileModificationController(req, res){
+    try{
+        await userServices.modification({...req.body, image: req.file}, req.userdata.id)
+        res.sendStatus(200)
+    }catch(err){
+        console.log(err)
+        if(err.name === "validationErrors"){
+            res.status(401).send({errorMsg: err.messages})
+        }else{
+            res.sendStatus(500) 
+        }
+       
+    }
+}
+
+
+export async function profileDeleteController(req, res){
+    try{
+        await userServices.delete(req.userdata.id)
+        res.sendStatus(200)
+    }catch(err){
+        console.log(err)
+        if(err.name === "validationErrors"){
+            res.status(401).send({errorMsg: err.messages})
+        }else{
+            res.sendStatus(500) 
+        }
+       
+    }
+}
+
+export async function passwordRequestController(req, res){
+    try{
+        
+        await userServices.passwordRequest(req.body.email)
+        res.sendStatus(200)
+    }catch(err){
+        console.log(err)
+        if(err.name === "validationErrors"){
+            res.status(409).send(err.messages)
+        }else{
+            res.sendStatus(500) 
+        }
+       
+    }
+}
+
+export async function passwordChangeController(req, res){
+    try{
+        await userServices.passwordChange(req.body.password, req.uid)
+        res.sendStatus(200)
+    }catch(err){
+        console.log(err)
+        res.sendStatus(500) 
+    }
+}
+
+export async function getUserByQueryController(req, res) {
+    try{
+        const users = await userServices.getUserByQuery(req.params.username)
+        res.send(users)
+    }catch(err){
+        console.log(err)
+        res.sendStatus(500) 
+    }
+
 }

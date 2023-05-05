@@ -1,9 +1,9 @@
 import { io } from "../index.js";
 
 export const socketServices = {
-    getOnlineUsers: async (socket) => {
+    getOnlineUsers: async (uid) => {
         let sockets = await io.fetchSockets();
-        sockets = sockets.filter(({userid}) => userid !== socket.userid)
+        sockets = sockets.filter(({userid}) => userid !== uid)
         return sockets.map((socket) => socket.userid)
     },
     getUsersByRoom: async (room) => {

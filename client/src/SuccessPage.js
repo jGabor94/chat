@@ -1,16 +1,38 @@
 import { useLocation } from "react-router-dom";
+import HomeContainer from "./elements/HomeContainer";
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { styled } from '@mui/material/styles';
+import { useNavigate } from "react-router-dom";
 
+const CustomButton = styled(Button)(({ theme }) => ({
+    backgroundColor: "#00C902",
+    '&:hover': {
+        backgroundColor: "#00AB02"
+    }
+
+}))
 
 function SuccessPage(){
 
-    const { state: { msg } = {} } = useLocation();
+    const { state: { email, text, title } = {} } = useLocation();
+    const navigate = useNavigate()
 
     return (
-        <div className="d-flex flex-column align-items-center text-success">
-            <p className="fs-5 fw-bolder m-0">{msg}</p>
-            <p className="fs-6 fw-bold">(A megerősítő linket elküldtük az email címedre)</p>
-            <img src="/success.png" style={{maxWidth: "60px"}} ></img>
-        </div>
+        <HomeContainer>
+            <Stack alignItems="center" sx={{padding: "10px"}} gap={1}> 
+            <CheckCircleOutlineIcon sx={{color: "#00C902", width: "70px", height: "70px"}} />
+            <Typography variant="h3" fontWeight={500} sx={{color: "white"}}>{title}</Typography>
+            <Stack direction="row" gap={1} flexWrap="wrap" justifyContent="center">
+                <Typography sx={{color: "white", textAlign: "center"}}>{text}</Typography>
+                <Typography sx={{color: "white", textDecoration: 'underline'}} fontWeight={600} >{email}</Typography>
+            </Stack>
+            <CustomButton variant="contained"onClick={() => navigate("/")} >Föoldal</CustomButton>
+            </Stack>
+            
+        </HomeContainer>
     )
 }
 

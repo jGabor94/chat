@@ -4,6 +4,8 @@ import { User, Role, VerifyToken } from "../models/models.js"
 import nodemailer from "nodemailer"
 import authServices from "./authServices.js";
 import { serverConfig } from "../serverConfig.js";
+import utils from "./utils.js";
+
 
 
 const transporter = nodemailer.createTransport({
@@ -28,6 +30,7 @@ const userServices = {
                 username: userdata.username,
                 password: bcrypt.hashSync(userdata.password, 10),
                 email: userdata.email,
+                imageid: userdata.imageid,
                 roles: ["user", userdata.username]
             })
             const createdRole = await Role.create({
@@ -73,17 +76,42 @@ const userServices = {
         }
     },
     getUserDetails: async (userId, cfg) => {
-        if(cfg.populated){
-            return await User.findOne({_id: userId}).populate("saved").populate("own")
-        }else{
-            return await User.findOne({_id: userId})
-        }  
+        return await User.findOne({_id: userId}).select({password: 0, __v: 0, roles: 0}) 
     },
     verify: async (uid) => {
         const user = await User.findOne({_id: uid})
         if(user.active) throw new validationErrors(["Ez a felhasználó már aktiválva van"])
         user.active = true
         return await user.save()
+    },
+    modification: async (userdata, uid) => {
+        const result = await User.findOneAndUpdate({_id: uid}, {name: userdata.name, ...userdata.image && {imageid: userdata.image.filename}, age: userdata.age ? userdata.age : null}, {new: false})
+        if (userdata.image || result.imageid !== "") await utils.deleteRecipeImage(result.imageid)
+        return result
+    },
+    delete: async (uid) => {
+        const result = await User.findOneAndDelete({_id: uid})
+        await utils.deleteRecipeImage(result.imageid)
+        return result
+    },
+    passwordRequest: async (email) => {
+        const user = await User.findOne({email: email})
+        if(!user) throw new validationErrors([{field: "email", msg: "E-mail cím nem létezik"}])
+        return await transporter.sendMail({
+            from: 'barcafanx@gmail.com',
+            to: email,
+            subject: 'Jelszó helyreállítás',
+            html: `
+            <a href='http://${serverConfig.hostname}:3000/password-reset/change/${authServices.createVerifyToken(user._id)}'>Ide Kattintva</a>
+            lehetőséged lesz beállítani egy új jelszót.
+            `
+          });
+    },
+    passwordChange: async (password, uid) => {
+        return await User.updateOne({_id: uid}, {password: bcrypt.hashSync(password, 10)})
+    },
+    getUserByQuery: async (query) => {
+        return await User.find({ username: { $regex: new RegExp(query, 'i') } })
     }
 }
 
