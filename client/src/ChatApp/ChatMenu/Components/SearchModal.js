@@ -8,10 +8,8 @@ import List from '@mui/material/List';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
-import Divider from '@mui/material/Divider';
 
 const ModalBox = styled(Box)(({ theme }) => ({
     position: 'absolute',

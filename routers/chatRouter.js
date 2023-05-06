@@ -7,10 +7,10 @@ const chatRouter = express.Router();
 
 chatRouter.get('/', middlewares.accessTokenVerify, chatController.getOwnChat)
 chatRouter.get('/groupChat', chatController.getGroupChat)
-chatRouter.post('/new', middlewares.accessTokenVerify, chatController.new)
-chatRouter.post('/message', middlewares.accessTokenVerify, chatController.message)
-chatRouter.put('/close', middlewares.accessTokenVerify, chatController.close)
+chatRouter.post('/new', middlewares.accessTokenVerify, middlewares.getSocket, chatController.new)
+chatRouter.post('/message', middlewares.accessTokenVerify, middlewares.getSocket, chatController.message)
+chatRouter.put('/close', middlewares.accessTokenVerify, middlewares.getSocket, chatController.close)
 chatRouter.get('/online', middlewares.accessTokenVerify, chatController.getOnline)
-chatRouter.get('/:id', middlewares.accessTokenVerify, chatController.getById)
+chatRouter.get('/:id', middlewares.accessTokenVerify, middlewares.getSocket, chatController.getById)
 
 export default chatRouter

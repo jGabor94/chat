@@ -45,7 +45,7 @@ const userServices = {
 
             const result = await transporter.sendMail({
                 from: 'barcafanx@gmail.com',
-                to: 'jakucs.gabor94@gmail.com',
+                to: userdata.email,
                 subject: 'Regisztráció megerősítése',
                 html: `
                 Az alábbi linkre kattintva igazolhatod a registzrációt.

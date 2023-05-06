@@ -48,7 +48,6 @@ const chatController = {
     },
     getOnline: async (req, res) => {
         const onlineUsers = await socketServices.getOnlineUsers(req.userdata.id)
-        console.log(onlineUsers)
         res.send(onlineUsers)
     },
     getGroupChat: async (req, res) => {

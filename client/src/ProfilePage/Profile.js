@@ -68,6 +68,7 @@ const Profile = () => {
             console.log(res.data)
             setFetchPending(false)
         })
+        
     }, [])
 
  

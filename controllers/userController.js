@@ -77,6 +77,9 @@ export async function verifyEmailController(req, res){
 
 export async function profileModificationController(req, res){
     try{
+        console.log(req.body)
+        console.log(req.file)
+        console.log("AAAAAAA")
         await userServices.modification({...req.body, image: req.file}, req.userdata.id)
         res.sendStatus(200)
     }catch(err){

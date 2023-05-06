@@ -22,12 +22,11 @@ const middlewares = {
 
         try{
             if(token){
-            jwt.verify(token, jwtConfig.accessSecretkey, async (err, payload) => {
+            jwt.verify(token, jwtConfig.accessSecretkey, (err, payload) => {
                 if(err){
                     res.sendStatus(401)
                 }else{
                     req.userdata = payload
-                    req.socket = await socketServices.getSocketByUserid(payload.id)
                     next()
                 }
             })
@@ -219,7 +218,11 @@ const middlewares = {
                 return cb(null, false, req.fileValidationError)
             }
         }
-    })
+    }),
+    getSocket: async (req, res, next) => {
+        req.socket = await socketServices.getSocketByUserid(req.userdata.id)
+        next()
+    }
 }
 
 
