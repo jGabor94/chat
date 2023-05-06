@@ -39,9 +39,12 @@ const ChatTitleBox = ({ chatInstance }) => {
 
     const [activeModal, setActiveModal] = useState(false)
 
-    const handleClick = (id, username) => {
+    const handleClick = (uid, username) => {
         setActiveModal(false)
-        chatInstance.newPrivateChat(id, username)
+        if(chatInstance.chat.type !== "private"){
+            chatInstance.newPrivateChat(uid, username)
+        }
+
     }
 
     return (

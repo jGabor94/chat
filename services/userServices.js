@@ -50,7 +50,7 @@ const userServices = {
                 html: `
                 Az alábbi linkre kattintva igazolhatod a registzrációt.
                 Ha a regisztrációt nem te kezdeményezted, hagyd figyelmen kívül ezt az üzenetet.
-                <a href='http://${serverConfig.hostname}:3000/verify/${authServices.createVerifyToken(createdUser._id)}'>Regisztráció megerőstése</a>
+                <a href='http://${serverConfig.hostname}:${serverConfig.port}/verify/${authServices.createVerifyToken(createdUser._id)}'>Regisztráció megerőstése</a>
                 `
               });
 
@@ -102,7 +102,7 @@ const userServices = {
             to: email,
             subject: 'Jelszó helyreállítás',
             html: `
-            <a href='http://${serverConfig.hostname}:3000/password-reset/change/${authServices.createVerifyToken(user._id)}'>Ide Kattintva</a>
+            <a href='http://${serverConfig.hostname}:${serverConfig.port}/password-reset/change/${authServices.createVerifyToken(user._id)}'>Ide Kattintva</a>
             lehetőséged lesz beállítani egy új jelszót.
             `
           });
