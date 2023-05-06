@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import MessageBox from './Components/MessageBox';
 import MessageImputBox from './Components/MessageImputBox';
 import ChatTitleBox from './Components/ChatTitleBox';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import ChatAppBar from '../ChatAppBar';
 
 
@@ -30,7 +30,9 @@ const StatusContainer = styled(Box)(({ theme }) => ({
 
 const ChatWindow = ({ chatInstance }) => {
 
-
+    useEffect(() => {
+        console.log("asd")
+    }, [])
     
 
     return (

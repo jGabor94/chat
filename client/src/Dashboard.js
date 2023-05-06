@@ -44,7 +44,7 @@ const Dashboard = () => {
 
     return (
         <HomeContainer>
-            <Card onClick={() => navigate("/chat")}>
+            <Card onClick={() => navigate("/chatApp")}>
                 <ChatIcon />
                 <Typography>ChatApp</Typography>
             </Card>

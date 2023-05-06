@@ -35,7 +35,7 @@ function App() {
         <Routes>
           <Route path="/" element={loginState.isLogged ? <Dashboard /> : <LoginComponent />}></Route>
           <Route path="/signup" element={loginState.isLogged ? <Chat /> : <SignUpComponent />}></Route>
-          <Route path="/chat" element={loginState.isLogged ? <Chat /> : <Navigate to="/" />}></Route>
+          <Route path="/chatApp" element={loginState.isLogged ? <Chat /> : <Navigate to="/" />}></Route>
           <Route path="/success" element={<SuccessPage />}></Route>
           <Route path="/verify/:token" element={loginState.isLogged ?  <Navigate to="/" /> : <EmailVerifiyPage/>}></Route>
           <Route path="/profile" element={loginState.isLogged ? <Profile /> : <Navigate to="/" />}></Route>
