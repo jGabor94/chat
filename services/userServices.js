@@ -85,8 +85,8 @@ const userServices = {
         return await user.save()
     },
     modification: async (userdata, uid) => {
-        const result = await User.findOneAndUpdate({_id: uid}, {name: userdata.name, ...userdata.image && {imageid: userdata.image.filename}, age: userdata.age ? userdata.age : null}, {new: false})
-        if (userdata.image || result.imageid !== "") await utils.deleteRecipeImage(result.imageid)
+        const result = await User.findOneAndUpdate({_id: uid}, {name: userdata.name, ...(userdata.image || userdata.imageid === "") && {imageid: userdata.imageid}, age: userdata.age ? userdata.age : null}, {new: false})
+        if (userdata.image || userdata.imageid === "") await utils.deleteRecipeImage(result.imageid)
         return result
     },
     delete: async (uid) => {
