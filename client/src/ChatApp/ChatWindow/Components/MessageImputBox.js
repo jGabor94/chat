@@ -18,6 +18,9 @@ import EMOTICON_REGEX from 'emojibase-regex/emoticon';
 
 
 
+
+
+
 const CustomSendIcon = styled(SendIcon)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main, 
     color: "#fff", 
@@ -29,6 +32,8 @@ const CustomSendIcon = styled(SendIcon)(({ theme }) => ({
 
 const MessageImputBox = ({chatInstance}) => {
 
+    console.log(emojis)
+
     const [message, setMessage] = useState("")
     const [anchorEl, setAnchorEl] = useState(false)
     const open = Boolean(anchorEl);
@@ -36,15 +41,17 @@ const MessageImputBox = ({chatInstance}) => {
 
     const handleChange = (e) => {
         setMessage(e.target.value.replace(EMOTICON_REGEX, (match) => {
-            console.log(match)
-            let replaced = match
-            emojis.forEach((emoji) => {
-                if(match && emoji.emoticon === match){
-                    console.log(emoji)
-                    replaced = emoji.emoji
-                }
-            })
-            return replaced 
+            if(match){
+                let replaced = match
+                emojis.forEach((emoji) => {
+                    if(Array.isArray(emoji.emoticon) ? emoji.emoticon.includes(match) : (emoji.emoticon === match)){
+                        replaced = emoji.emoji
+                    }
+                    
+                })
+                return replaced 
+            }
+    
         }))
     }
 
