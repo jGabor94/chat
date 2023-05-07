@@ -1,7 +1,7 @@
 import { socketServices } from "../services/socketServices.js"
 import { chatServices } from "../services/chatServices.js"
 import { io } from "../index.js";
-import { Chat } from "../models/models.js";
+import { Chat, Message } from "../models/models.js";
 
 
 const chatController = {
